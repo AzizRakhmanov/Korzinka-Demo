@@ -10,7 +10,7 @@ namespace Korzinka_Demo.DAL.DbContexts
             : base(options)
         { }
 
-         public KorzinkaDbContext() { }
+        public KorzinkaDbContext() { }
         public DbSet<Product> Products { get; set; }
 
         public DbSet<User> Users { get; set; }
@@ -19,7 +19,7 @@ namespace Korzinka_Demo.DAL.DbContexts
 
         public DbSet<ProductAddress> ProductAddresses { get; set; }
 
-        public DbSet<ShoppingCard> ShoppingCards { get; set; }  
+        public DbSet<ShoppingCard> ShoppingCards { get; set; }
 
         public DbSet<Check> Checks { get; set; }
 

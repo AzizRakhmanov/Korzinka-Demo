@@ -1,7 +1,7 @@
-﻿
-using Korzinka_Demo.DAL.DbContexts;
+﻿using Korzinka_Demo.DAL.DbContexts;
 using Korzinka_Demo.DAL.IRepositories;
 using Korzinka_Demo.Domain.Commons;
+using Korzinka_Demo.Services.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -21,15 +21,10 @@ namespace Korzinka_Demo.DAL.Repositories
 
         public async ValueTask<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
         {
-            var entity = await this.SelectAsync(expression);
-            var result = this.dbSet.Remove(entity);
-
-            if (result.State == EntityState.Deleted)
-            {
-                var res = await this._context.SaveChangesAsync();
-                return res > 0;
-            }
-            return false;
+            var @object = await this.SelectAsync(expression);
+            this._context.Entry(@object).State = EntityState.Deleted;
+            var result = this._context.SaveChanges();
+            return result > 0;
         }
 
         public bool DeleteMany(Expression<Func<TEntity, bool>> expression)
@@ -37,11 +32,11 @@ namespace Korzinka_Demo.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public async ValueTask<TEntity> InsertAsync(TEntity entity)
+        public async ValueTask<bool> InsertAsync(TEntity entity)
         {
-            var entry = this.dbSet.Add(entity);
-            await this._context.SaveChangesAsync();
-            return entry.Entity;
+            this._context.Entry(entity).State = EntityState.Added;
+            var result = await this._context.SaveChangesAsync();
+            return result > 0;
         }
 
         public async ValueTask SaveAsync()
@@ -49,8 +44,9 @@ namespace Korzinka_Demo.DAL.Repositories
             await this._context.SaveChangesAsync();
         }
 
-        public IQueryable<TEntity> SelectAll(Expression<Func<TEntity, bool>> expression)
-        => this.dbSet;
+        public IQueryable<TEntity> SelectAll(Expression<Func<TEntity, bool>> expression, PaginationParams paginationParams)
+        => this.dbSet.Where(expression).Skip((paginationParams.PageIndex - 1) * paginationParams.PageSize)
+            .Take(paginationParams.PageSize);
 
         public async ValueTask<TEntity> SelectAsync(Expression<Func<TEntity, bool>> expression)
         => await this.dbSet.FirstOrDefaultAsync(expression);
@@ -59,11 +55,8 @@ namespace Korzinka_Demo.DAL.Repositories
 
         public void Update(TEntity entity)
         {
-            if (entity is not null)
-            {
-               this._context.Update(entity);
-               var result = this._context.SaveChanges();
-            }
+            this._context.Entry(entity).State = EntityState.Modified;
+            this._context.SaveChangesAsync();
             return;
         }
     }

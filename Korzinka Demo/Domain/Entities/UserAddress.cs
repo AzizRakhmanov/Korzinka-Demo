@@ -4,6 +4,6 @@ namespace Korzinka_Demo.Domain.Entities
 {
     public class UserAddress : Auditable
     {
-        public string Address {  get; set; }
+        public string Address { get; set; }
     }
 }

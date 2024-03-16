@@ -2,7 +2,6 @@ using Korzinka_Demo.DAL.DbContexts;
 using Korzinka_Demo.DAL.IRepositories;
 using Korzinka_Demo.DAL.Repositories;
 using Korzinka_Demo.Domain.Entities;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -20,7 +19,7 @@ namespace Korzinka_Demo
 
             builder.Services.AddScoped<IKorzinkaRepository<Product>, KorzinkaRepository<Product>>();
 
-            builder.Services.AddSwaggerGen(options => 
+            builder.Services.AddSwaggerGen(options =>
                 options.SwaggerDoc("v1",
                 new OpenApiInfo()
                 {
@@ -33,7 +32,7 @@ namespace Korzinka_Demo
                     }
                 }));
 
-          
+
 
             builder.Services.AddControllers();
 
@@ -41,11 +40,13 @@ namespace Korzinka_Demo
 
             IWebHostEnvironment env = app.Environment;
 
+            // builder.Services.add
+
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                
+
 
                 //app.UseSwaggerUI(options =>
                 //{
@@ -59,8 +60,8 @@ namespace Korzinka_Demo
 
             app.UseStaticFiles();
 
-           
-           
+
+
             app.MapControllers();
 
             app.Run();
